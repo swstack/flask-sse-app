@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "845fd1d4b74173450cb36c674352f253ea679fa82203ead6e6fcedd7785d594b"
+            "sha256": "30ec0d95854039bef7e75f8eeff801b6c43064fbd472fe9e002ce8984ea86121"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -47,13 +47,9 @@
             "index": "pypi",
             "version": "==2.1.1"
         },
-        "flask-classful": {
-            "hashes": [
-                "sha256:3a8f3c8fc549e37acf082f7b0ebf9e53dc35b0c9241c14f7d64433d4c1d629c9",
-                "sha256:ae0cabd3f69e1e16db3bf31f50862d3a5577244bfa0ace2b4612d10436e4bff7"
-            ],
-            "index": "pypi",
-            "version": "==0.14.2"
+        "flask-sse-app": {
+            "editable": true,
+            "path": "."
         },
         "idna": {
             "hashes": [

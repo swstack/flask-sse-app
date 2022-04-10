@@ -63,3 +63,7 @@ class TestDatabase(unittest.TestCase):
 
     def test_read_write_connection(self):
         pass
+
+
+if __name__ == "__main__":
+    unittest.main()

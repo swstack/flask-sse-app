@@ -5,9 +5,9 @@ from flask import Flask, Response
 from app.db import Database, ReadWriteConnection, ReadOnlyConnection
 from app.events import EventProcessor
 
-db = Database()
-read_only_db = ReadOnlyConnection(db)
-event_processor = EventProcessor(ReadWriteConnection(db), num_workers=1)
+_db = Database()
+read_only_db = ReadOnlyConnection(_db)
+event_processor = EventProcessor(ReadWriteConnection(_db), num_workers=1)
 app = Flask("api")
 
 
@@ -44,5 +44,6 @@ def exam_info(exam_id):
             return Response(status=404)
 
 
-event_processor.run()
-app.run(debug=True)
+if __name__ == "__main__":
+    event_processor.run()
+    app.run(debug=True)

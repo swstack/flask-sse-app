@@ -29,3 +29,7 @@ class EventProcessor:
             worker = Thread(target=event_stream, args=(self.database,))
             self.workers.append(worker)
             worker.start()
+
+    def shutdown(self):
+        for worker in self.workers:
+            worker.join()
