@@ -32,12 +32,22 @@ class Student(JsonSerializable):
     def __init__(self, student_id):
         self.student_id = student_id
         self.student_exams = {}
+        self.student_average = -1
+
+    def recompute_average(self):
+        student_exam_scores = [exam.score for exam in self.student_exams.values()]
+        return sum(student_exam_scores) / len(student_exam_scores)
 
 
 class Exam(JsonSerializable):
     def __init__(self, exam_id):
         self.exam_id = exam_id
         self.all_student_exams = {}
+        self.all_student_average = -1
+
+    def recompute_average(self):
+        exam_scores = [exam.score for exam in self.all_student_exams.values()]
+        return sum(exam_scores) / len(exam_scores)
 
 
 class StudentExam(JsonSerializable):
@@ -57,10 +67,12 @@ class Database:
 
         student = self.students_index.get(student_id, Student(student_id))
         student.student_exams[exam_id] = student_exam
+        student.recompute_average()
         self.students_index[student_id] = student
 
         exam = self.exams_index.get(exam_id, Exam(exam_id))
         exam.all_student_exams[student_id] = student_exam
+        exam.recompute_average()
         self.exams_index[exam_id] = exam
 
     def get_students(self):
