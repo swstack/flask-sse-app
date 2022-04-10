@@ -61,6 +61,7 @@ class Database:
     def __init__(self):
         self.students_index = {}
         self.exams_index = {}
+        self.lock = RLock()
 
     def new_student_exam(self, student_id, exam_id, score):
         student_exam = StudentExam(student_id, exam_id, score)
@@ -83,16 +84,18 @@ class Database:
 
 
 class ReadWriteConnection:
-    def __init__(self, db):
+    def __init__(self, db, wait=True):
         self.db = db
-        self.lock = RLock()
+        self.wait = wait
 
     def __enter__(self):
-        self.lock.acquire()
-        return self.db
+        if self.db.lock.acquire(blocking=self.wait):
+            return self.db
+        else:
+            raise RuntimeError("Failed to acquire lock")
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        self.lock.release()
+        self.db.lock.release()
 
 
 class ReadOnlyConnection:

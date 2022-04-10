@@ -1,6 +1,7 @@
 import unittest
+import threading
 
-from app.db import Database
+from app.db import Database, ReadWriteConnection
 
 
 class TestDatabase(unittest.TestCase):
@@ -62,7 +63,20 @@ class TestDatabase(unittest.TestCase):
         assert len(exams.get("exam2").all_student_exams) == 2
 
     def test_read_write_connection(self):
-        pass
+        read_write_conn1 = ReadWriteConnection(self.db, wait=False)
+        read_write_conn2 = ReadWriteConnection(self.db, wait=False)
+
+        def thread():
+            try:
+                with read_write_conn2:
+                    pass
+            except Exception as e:
+                assert f"{e}" == "Failed to acquire lock"
+
+        with read_write_conn1:
+            t = threading.Thread(target=thread)
+            t.start()
+            t.join()
 
 
 if __name__ == "__main__":
