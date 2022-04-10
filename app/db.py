@@ -36,7 +36,7 @@ class Student(JsonSerializable):
 
     def recompute_average(self):
         student_exam_scores = [exam.score for exam in self.student_exams.values()]
-        return sum(student_exam_scores) / len(student_exam_scores)
+        self.student_average = sum(student_exam_scores) / len(student_exam_scores)
 
 
 class Exam(JsonSerializable):
@@ -47,7 +47,7 @@ class Exam(JsonSerializable):
 
     def recompute_average(self):
         exam_scores = [exam.score for exam in self.all_student_exams.values()]
-        return sum(exam_scores) / len(exam_scores)
+        self.all_student_average = sum(exam_scores) / len(exam_scores)
 
 
 class StudentExam(JsonSerializable):
