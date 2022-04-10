@@ -11,10 +11,14 @@ event_processor = EventProcessor(ReadWriteConnection(_db), num_workers=1)
 app = Flask("api")
 
 
+def respond(body=None, status=200, content_type="application/json"):
+    return Response(body, status=status, content_type=content_type)
+
+
 @app.route("/students")
 def students():
     with read_only_db as db:
-        return json.dumps([student.to_json() for student in db.get_students().values()])
+        return respond(json.dumps([student.to_dict() for student in db.get_students().values()]))
 
 
 @app.route("/students/<student_id>")
@@ -23,15 +27,15 @@ def student_info(student_id):
         student = db.get_students().get(student_id, None)
         if student:
             if student:
-                return Response(json.dumps(student.to_json()), status=200)
+                return respond(json.dumps(student.to_dict()))
         else:
-            return Response(status=404)
+            return respond(status=404)
 
 
 @app.route("/exams")
 def exams():
     with read_only_db as db:
-        return json.dumps([exam.to_json() for exam in db.get_exams().values()])
+        return respond(json.dumps([exam.to_dict() for exam in db.get_exams().values()]))
 
 
 @app.route("/exams/<exam_id>")
@@ -39,9 +43,9 @@ def exam_info(exam_id):
     with read_only_db as db:
         exam = db.get_exams().get(exam_id, None)
         if exam:
-            return Response(json.dumps(exam.to_json()), status=200)
+            return respond(json.dumps(exam.to_dict()))
         else:
-            return Response(status=404)
+            return respond(status=404)
 
 
 if __name__ == "__main__":

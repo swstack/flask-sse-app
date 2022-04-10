@@ -23,12 +23,15 @@ import json
 from threading import RLock
 
 
-class JsonSerializable:
+class Serializable:
     def to_json(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
+    def to_dict(self):
+        return json.loads(self.to_json())
 
-class Student(JsonSerializable):
+
+class Student(Serializable):
     def __init__(self, student_id):
         self.student_id = student_id
         self.student_exams = {}
@@ -39,7 +42,7 @@ class Student(JsonSerializable):
         self.student_average = sum(student_exam_scores) / len(student_exam_scores)
 
 
-class Exam(JsonSerializable):
+class Exam(Serializable):
     def __init__(self, exam_id):
         self.exam_id = exam_id
         self.all_student_exams = {}
@@ -50,7 +53,7 @@ class Exam(JsonSerializable):
         self.all_student_average = sum(exam_scores) / len(exam_scores)
 
 
-class StudentExam(JsonSerializable):
+class StudentExam(Serializable):
     def __init__(self, student_id, exam_id, score):
         self.student_id = student_id
         self.exam_id = exam_id
