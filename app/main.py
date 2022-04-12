@@ -1,53 +1,11 @@
-import json
-
-from flask import Flask, Response
-
-from app.db import Database, ReadWriteConnection, ReadOnlyConnection
-from app.events import EventProcessor
-
-_db = Database()
-read_only_db = ReadOnlyConnection(_db)
-event_processor = EventProcessor(ReadWriteConnection(_db), num_workers=1)
-app = Flask("api")
-
-
-def respond(body=None, status=200, content_type="application/json"):
-    return Response(body, status=status, content_type=content_type)
-
-
-@app.route("/students")
-def students():
-    with read_only_db as db:
-        return respond(json.dumps([student.to_dict() for student in db.get_students().values()]))
-
-
-@app.route("/students/<student_id>")
-def student_info(student_id):
-    with read_only_db as db:
-        student = db.get_students().get(student_id, None)
-        if student:
-            if student:
-                return respond(json.dumps(student.to_dict()))
-        else:
-            return respond(status=404)
-
-
-@app.route("/exams")
-def exams():
-    with read_only_db as db:
-        return respond(json.dumps([exam.to_dict() for exam in db.get_exams().values()]))
-
-
-@app.route("/exams/<exam_id>")
-def exam_info(exam_id):
-    with read_only_db as db:
-        exam = db.get_exams().get(exam_id, None)
-        if exam:
-            return respond(json.dumps(exam.to_dict()))
-        else:
-            return respond(status=404)
-
+from app.api import create_app
+from app.db import Database, ReadWriteConnection
+from app.events import EventProcessor, EventSource
 
 if __name__ == "__main__":
+    db = Database()
+    event_source = EventSource()
+    event_processor = EventProcessor(event_source, ReadWriteConnection(db), num_workers=1)
+    app = create_app(db)
     event_processor.run()
     app.run(debug=True)

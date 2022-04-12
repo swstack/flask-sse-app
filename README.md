@@ -7,11 +7,12 @@ This is a toy project that consumes server-side events that represent hypothetic
 
 ![Architecture](architecture.png)
 
-Architecture Notes:
+Notes:
 * The application is multi-threaded, with the flask builtin dev server serving HTTP requests on the main thread, and a separate worker pool consuming SSE events.
 * The SSE events are consumed over a persistent HTTP streaming connection.
 * The DB is read-only from the API while the event processors have a read/write threadsafe connection.
 * The DB internal storage is de-normalized to optimize the required access patterns, similar to how SQL manages indexes.
+* The API does not support pagination at the moment.
 
 ## Running Locally with `pipenv`
 
