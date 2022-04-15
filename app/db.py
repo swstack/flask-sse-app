@@ -79,6 +79,14 @@ class Database:
         exam.recompute_average()
         self.exams_index[exam_id] = exam
 
+    def get_student_page(self, page, size):
+        students_sorted = sorted(self.students_index)
+        start = (page - 1) * size
+        end = min(start + size, len(students_sorted))
+        next_page = end < len(students_sorted)
+        page_data = students_sorted[start:end]
+        return [self.students_index.get(k) for k in page_data], next_page
+
     def get_students(self):
         return self.students_index
 

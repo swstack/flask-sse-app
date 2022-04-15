@@ -62,6 +62,42 @@ class TestDatabase(unittest.TestCase):
         assert exams.get("exam2").all_student_exams.get("student2").student_id == "student2"
         assert len(exams.get("exam2").all_student_exams) == 2
 
+    def test_db_paging(self):
+        self.db.new_student_exam("a", "exam1", 100)
+        self.db.new_student_exam("z", "exam1", 100)
+        self.db.new_student_exam("b", "exam1", 100)
+        self.db.new_student_exam("d", "exam1", 100)
+        self.db.new_student_exam("k", "exam1", 100)
+        self.db.new_student_exam("t", "exam1", 100)
+        self.db.new_student_exam("f", "exam1", 100)
+
+        page1, next_page = self.db.get_student_page(1, 2)
+        assert len(page1) == 2
+        assert next_page == True
+        assert page1[0].student_id == "a"
+        assert page1[1].student_id == "b"
+
+        page2, next_page = self.db.get_student_page(2, 2)
+        assert len(page2) == 2
+        assert next_page == True
+        assert page2[0].student_id == "d"
+        assert page2[1].student_id == "f"
+
+        page3, next_page = self.db.get_student_page(3, 2)
+        assert len(page3) == 2
+        assert next_page == True
+        assert page3[0].student_id == "k"
+        assert page3[1].student_id == "t"
+
+        page4, next_page = self.db.get_student_page(4, 2)
+        assert len(page4) == 1
+        assert next_page == False
+        assert page4[0].student_id == "z"
+
+        page5, next_page = self.db.get_student_page(5, 2)
+        assert len(page5) == 0
+        assert next_page == False
+
     def test_read_write_connection(self):
         read_write_conn1 = ReadWriteConnection(self.db, wait=False)
         read_write_conn2 = ReadWriteConnection(self.db, wait=False)

@@ -1,6 +1,5 @@
 import json
-
-from flask import Flask, Response
+from flask import Flask, Response, request
 
 from app.db import ReadOnlyConnection
 
@@ -11,10 +10,20 @@ def create_app(database):
 
     @app.route("/students")
     def students():
-        # TODO: Support pagination
+        page = request.args.get("page", None)
+        size = request.args.get("size", None)
+
         with read_only_db as db:
-            return respond(
-                json.dumps([student_json(student) for student in db.get_students().values()]))
+
+            if page and size:
+                current_page, is_next_page = db.get_student_page(int(page), int(size))
+                next_page = None
+                if is_next_page:
+                    next_page = int(page) + 1
+                return student_page(current_page, page, next_page)
+            else:
+                return respond(
+                    json.dumps([student_json(student) for student in db.get_students().values()]))
 
     @app.route("/students/<student_id>")
     def student_info(student_id):
@@ -42,6 +51,14 @@ def create_app(database):
                 return respond(status=404)
 
     return app
+
+
+def student_page(students, page, next_page):
+    return {
+        "students": [student_json(student) for student in students],
+        "page": page,
+        "nextPage": next_page,
+    }
 
 
 def student_json(student):
